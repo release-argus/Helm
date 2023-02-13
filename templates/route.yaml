@@ -1,0 +1,35 @@
+{{- if .Values.global.openshift }}
+{{- if .Values.argus.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Values.argus.route.name | default .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.argus.route.annotations }}
+  annotations:
+    {{ toYaml .Values.argus.route.annotations }}
+  {{- end }}
+  labels:
+    {{- include "argus.labels" . | nindent 4 }}
+    {{- if .Values.argus.route.extraLabels }}
+    {{- toYaml .Values.argus.route.extraLabels | indent 4 }}
+    {{- end }}
+spec:
+  host: {{ .Values.argus.route.host }}
+  to:
+    kind: Service
+    name: {{ .Values.argus.service.name | default .Release.Name }}
+  tls:
+    termination: {{ .Values.argus.route.tls.termination }}
+    insecureEdgeTerminationPolicy: {{ .Values.argus.route.tls.insecureEdgeTerminationPolicy }}
+    {{- if .Values.argus.route.tls.key }}
+    key: {{ .Values.argus.route.tls.key }}
+    {{- end }}
+    {{- if .Values.argus.route.tls.certificate }}
+    certificate: {{ .Values.argus.route.tls.certificate }}
+    {{- end }}
+    {{- if .Values.argus.route.tls.caCertificate }}
+    caCertificate: {{ .Values.argus.route.tls.caCertificate }}
+    {{- end }}
+{{- end }}
+{{- end }}

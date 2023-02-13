@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.argus.deploymentAnnotations }}
+  annotations:
+    {{ toYaml .Values.argus.deploymentAnnotations }}
+  {{- end }}
+  labels:
+    {{- include "argus.labels" . | nindent 4 }}
+    {{- if .Values.argus.extraDeploymentLabels }}
+    {{- toYaml .Values.argus.extraDeploymentLabels | indent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "argus.selectorLabels" . | nindent 6 }}
+      {{- if .Values.argus.extraPodLabels }}
+      {{- toYaml .Values.argus.extraPodLabels | indent 6 }}
+      {{- end }}
+  template:
+    metadata:
+      {{- if .Values.argus.podAnnotations }}
+      annotations:
+        {{ toYaml .Values.argus.podAnnotations }}
+      {{- end }}
+      labels:
+        {{- include "argus.selectorLabels" . | nindent 8 }}
+        {{- if .Values.argus.extraPodLabels }}
+        {{- toYaml .Values.argus.extraPodLabels | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ .Values.argus.serviceAccount.name | default .Release.Name }}
+      {{- if .Values.argus.extraInitContainers }}
+      initContainers:
+          {{ toYaml .Values.argus.extraInitContainers | indent 10 }}
+      {{- end }}
+      containers:
+        - name: argus
+          image: {{ .Values.argus.image.registry }}/{{ .Values.argus.image.repository }}:{{ .Values.argus.image.tag }}
+          imagePullPolicy: "{{ .Values.argus.image.pullPolicy }}"
+          {{- with .Values.argus.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+          - name: data
+            mountPath: /app/data/
+          ports:
+            - containerPort: {{ .Values.argus.containerPort }}
+          volumeMounts:
+            - name: {{ .Values.argus.storage.name | default .Release.Name }}
+              mountPath: /app/data/
+            - name: {{ .Release.Name }}-config
+              mountPath: /app/config.yml
+              readOnly: true
+              subPath: config.yml
+          {{- if .Values.argus.extraVolumeMounts }}
+            {{ toYaml .Values.argus.extraVolumeMounts | nindent 12 }}
+          {{- end }}
+      restartPolicy: Always
+      volumes:
+        {{- if .Values.argus.storage.enabled }}
+        - name: {{ .Values.argus.storage.name | default .Release.Name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.argus.storage.name | default .Release.Name }}
+        {{- end }}
+        - name: {{ .Release.Name }}-config
+          secret:
+            defaultMode: 440
+            secretName: {{ .Values.argus.secret.name | default .Release.Name }}
+        {{- if .Values.argus.extraVolumes }}
+        {{- toYaml .Values.argus.extraVolumes | nindent 8}}
+        {{- end }}
+  strategy:
+    type: Recreate
