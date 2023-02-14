@@ -20,9 +20,11 @@ argus:
   extraContainers: null
 
   # List of extra env vars
-  extraEnvironmentVars: {}
-    # ARGUS_UID: 911 # Optional UID override
-    # ARGUS_GID: 911 # Optional GID override
+  extraEnvironmentVars: []
+    # - name: ARGUS_UID # Optional UID override
+    #   value: "911"
+    # - name: ARGUS_GID # Optional GID override
+    #   value: "911"
 
   # List of Secrets to use as env var
   extraSecretEnvironmentVars: []
@@ -133,6 +135,9 @@ argus:
     extraLabels: {}
 
     host: chart-example.local
+
+    port:
+      targetPort: http
 
     tls:
       termination: edge

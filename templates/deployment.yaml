@@ -44,9 +44,10 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          volumeMounts:
-          - name: data
-            mountPath: /app/data/
+          {{- if .Values.argus.extraEnvironmentVars }}
+          env:
+            {{ toYaml .Values.argus.extraEnvironmentVars | nindent 12 }}
+          {{- end }}
           ports:
             - containerPort: {{ .Values.argus.containerPort }}
           volumeMounts:
@@ -58,6 +59,9 @@ spec:
               subPath: config.yml
           {{- if .Values.argus.extraVolumeMounts }}
             {{ toYaml .Values.argus.extraVolumeMounts | nindent 12 }}
+          {{- end }}
+          {{- if .Values.argus.extraContainers }}
+            {{ toYaml .Values.argus.extraContainers | nindent 8 }}
           {{- end }}
       restartPolicy: Always
       volumes:
