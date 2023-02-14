@@ -1,0 +1,15 @@
+---
+releases:
+  - name: argus
+    namespace: argus
+    createNamespace: true
+    chart: ../../
+    values:
+      - global:
+          openshift: true
+        argus:
+          route:
+            host: argus.example.io
+
+      - values.yaml.gotmpl
+

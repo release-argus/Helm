@@ -1,0 +1,52 @@
+argus:
+  service:
+    annotations:
+      # Setup service serving certificate secret
+      # https://docs.openshift.com/container-platform/4.12/security/certificates/service-serving-certificate.html
+      service.beta.openshift.io/serving-cert-secret-name: proxy-tls
+
+    # Set Service targetPort to oauth-proxy port
+    targetPort: 8443
+
+  serviceAccount:
+    annotations:
+      # Set OAuth annotation required by oauth-prxy
+      serviceaccounts.openshift.io/oauth-redirectreference.primary: '{"kind":"OAuthRedirectReference","apiVersion":"v1","reference":{"kind":"Route","name":"{{ .Release.Name }}"}}'
+
+  # Set Route to reencrypt for oauth-proxy with tls
+  route:
+    tls:
+      # Set route to Reencrypt
+      # connection to oauth-proxy via tls
+      termination: Reencrypt
+
+  # Add oauth-proxy sidecar container
+  extraContainers:
+    - name: oauth-proxy
+      image: openshift/oauth-proxy:latest
+      imagePullPolicy: IfNotPresent
+      ports:
+      - containerPort: 8443
+        name: public
+      args:
+      - --https-address=:8443
+      - --provider=openshift
+      - --openshift-service-account={{ .Release.Name }}
+      - --upstream=http://localhost:8080
+      - --tls-cert=/etc/tls/private/tls.crt
+      - --tls-key=/etc/tls/private/tls.key
+      - --cookie-secret=SECRET
+      volumeMounts:
+      - mountPath: /etc/tls/private
+        name: proxy-tls
+
+  # Add tls cert secret for oauth-proxy
+  # Secret with the service serving certificate
+  extraVolumes:
+    - name: proxy-tls
+      secret:
+        secretName: proxy-tls
+
+  # Set containerPort to oauth-proxy port
+  containerPort: 8443
+
