@@ -40,6 +40,9 @@ argus:
 
   containerPort: 8080
 
+  # Priotiry class
+  priorityClassName: ""
+
   # Add volumeMounts to
   # Argus Contianer
   extraVolumeMounts: null
