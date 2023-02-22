@@ -1,0 +1,27 @@
+{{- if .Values.argus.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.argus.service.name | default .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.argus.service.annotations }}
+  annotations:
+    {{ toYaml .Values.argus.service.annotations }}
+  {{- end }}
+  labels:
+    {{- include "argus.labels" . | nindent 4 }}
+    {{- if .Values.argus.service.extraLabels }}
+    {{- toYaml .Values.argus.service.extraLabels | indent 4 }}
+    {{- end }}
+spec:
+  ports:
+  - name: http
+    port: 80
+    targetPort: {{ .Values.argus.service.targetPort }}
+  selector:
+    {{- include "argus.selectorLabels" . | nindent 4 }}
+    {{- if .Values.argus.extraPodLabels }}
+    {{- toYaml .Values.argus.extraPodLabels | indent 4 }}
+    {{- end }}
+  type: {{ .Values.argus.service.type }}
+{{- end }}

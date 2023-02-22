@@ -1,0 +1,35 @@
+{{- if not .Values.global.openshift }}
+{{- if .Values.argus.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.argus.ingress.name | default .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.argus.ingress.annotations }}
+  annotations:
+    {{ toYaml .Values.argus.ingress.annotations }}
+  {{- end }}
+  labels:
+    {{- include "argus.labels" . | nindent 4 }}
+    {{- if .Values.argus.ingress.extraLabels }}
+    {{- toYaml .Values.argus.ingress.extraLabels | indent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: {{ .Values.argus.ingress.ingressClassName }}
+  rules:
+  - host: {{ .Values.argus.ingress.host }}
+    http:
+      paths:
+      - backend:
+          service:
+            name: {{ .Values.argus.service.name | default .Release.Name }}
+            port:
+              number: {{ .Values.argus.ingress.servicePort }}
+        path: /
+        pathType: Prefix
+  tls:
+  {{- if .Values.argus.ingress.tls }}
+    {{- toYaml .Values.argus.service.tls | indent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}

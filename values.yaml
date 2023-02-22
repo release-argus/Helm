@@ -1,0 +1,175 @@
+global:
+  # Enable OpenShift specific settings
+  openshift: false
+
+# Settings for argus
+argus:
+  # Image for deployment
+  image:
+    repository: "releaseargus/argus"
+    tag: "0.11.1"
+    registry: 'docker.io'
+    pullPolicy: IfNotPresent
+
+  containerSecurityContext: {}
+
+  # Additional InitContainers
+  extraInitContainers: null
+
+  # Additional sidecar containers
+  extraContainers: null
+
+  # List of extra env vars
+  extraEnvironmentVars: []
+    # - name: ARGUS_UID # Optional UID override
+    #   value: "911"
+    # - name: ARGUS_GID # Optional GID override
+    #   value: "911"
+
+  # List of Secrets to use as env var
+  extraSecretEnvironmentVars: []
+    # - envName: AWS_SECRET_ACCESS_KEY
+    #   secretName: vault
+    #   secretKey: AWS_SECRET_ACCESS_KEY
+
+  extraDeploymentLabels: {}
+  deploymentAnnotations: {}
+
+  extraPodLabels: {}
+  podAnnotations: {}
+
+  containerPort: 8080
+
+  # Priotiry class
+  priorityClassName: ""
+
+  # Add volumeMounts to
+  # Argus Contianer
+  extraVolumeMounts: null
+  # - name: scripts
+  #   mountPath: /scripts
+  #   readOnly: true
+
+  # Add Volumes to
+  # Argus Pod
+  extraVolumes: null
+  # - name: scipts
+  #   emptyDir: {}
+
+  storage:
+    # Create and Mount pvc
+    # Mounted under /app/data
+    enabled: true
+
+    # Set name for data pvc
+    name: ""
+
+    # Size of PVC
+    size: 1Gi
+
+    # StorageClass for data PVC
+    storageClass: null
+
+    # AccessMode for data PVC
+    accessMode: ReadWriteOnce
+
+    annotations: {}
+    extraLabels: {}
+
+  serviceAccount:
+    # Create ServiceAccount
+    enabled: true
+
+    # Set name for ServiceAccount
+    # Required if create is false
+    name: ""
+
+    # Annotations for the ServiceAccount
+    annotations: {}
+
+    # Extra labels for the ServiceAccount
+    extraLabels: {}
+
+  service:
+    # Create Service
+    enabled: true
+
+    type: "ClusterIP"
+
+    name: ""
+    # Target port for service
+    targetPort: 8080
+
+    # Annotations for the Service
+    annotations: {}
+
+    # Extra labels for the Service
+    extraLabels: {}
+
+  ingress:
+    # Enable creation of Ingress
+    # is disabled on OpenShift
+    enabled: true
+
+    name: ""
+
+    annotations: {}
+    extraLabels: {}
+
+    ingressClassName: ""
+
+    host: ""
+
+    servicePort: 80
+
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  # OpenShift only - create a route to expose the service
+  # By default the created route will be of type edge
+  route:
+    enabled: true
+
+    name: ""
+
+    annotations: {}
+    extraLabels: {}
+
+    host: chart-example.local
+
+    port:
+      targetPort: http
+
+    tls:
+      termination: edge
+      insecureEdgeTerminationPolicy: Redirect
+      key: null
+      certificate: null
+      caCertificate: null
+
+  secret:
+    # Enable config secret
+    # Required if argus.config is used
+    enabled: true
+
+    # Name of Config secret
+    # Required if Secret is disabled
+    name: ""
+
+    annotations: {}
+    extraLabels: {}
+
+  config: |
+    service:
+      release-argus/argus:
+        latest_version:
+          type: github
+          url: release-argus/argus
+        deployed_version:
+          url: http://localhost:8080/api/v1/version
+          json: version
+        dashboard:
+          icon: https://github.com/release-argus/Argus/raw/master/web/ui/static/favicon.svg
+          web_url: https://github.com/release-argus/Argus/blob/master/CHANGELOG.md

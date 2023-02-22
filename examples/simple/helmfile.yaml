@@ -1,0 +1,11 @@
+---
+releases:
+  - name: argus
+    namespace: argus
+    createNamespace: true
+    chart: ../../
+    values:
+      - argus:
+          ingress:
+            host: 'argus.example.io'
+

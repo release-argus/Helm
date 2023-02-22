@@ -1,0 +1,16 @@
+apiVersion: v2
+name: argus
+version: v0.0.2
+description: Argus is a lightweight monitor to notify of new software releases via Gotify/Slack/other messages and/or WebHooks.
+keywords:
+  - A list of keywords about this project (optional)
+home: https://release-argus.io/
+sources:
+  - https://github.com/release-argus/Argus
+maintainers:
+  - name: Lars Lehmann
+    url: https://larsl.net
+icon: https://github.com/release-argus/Argus/raw/master/web/ui/static/logo-dark.png
+appVersion: '0.11.1'
+annotations:
+  example: A list of annotations keyed by name (optional).
