@@ -1,0 +1,26 @@
+{{- if .Values.argus.storage.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.argus.storage.name | default .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.argus.service.annotations }}
+  annotations:
+    {{ toYaml .Values.argus.service.annotations }}
+  {{- end }}
+  labels:
+    {{- include "argus.labels" . | nindent 4 }}
+    {{- if .Values.argus.service.extraLabels }}
+    {{- toYaml .Values.argus.service.extraLabels | indent 4 }}
+    {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.argus.storage.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.argus.storage.size }}
+
+  {{- if .Values.argus.storage.storageClass }}
+  storageClassName: {{ .Values.argus.storage.storageClass }}
+  {{- end }}
+{{- end }}
