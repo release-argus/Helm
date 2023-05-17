@@ -44,7 +44,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.argus.extraEnvironmentVars }}
+          {{- if or (.Values.argus.extraEnvironmentVars) (.Values.argus.extraSecretEnvironmentVars)  }}
           env:
             {{- if .Values.argus.extraEnvironmentVars }}
             {{ toYaml .Values.argus.extraEnvironmentVars | nindent 12 }}
