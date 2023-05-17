@@ -46,7 +46,12 @@ spec:
           {{- end }}
           {{- if .Values.argus.extraEnvironmentVars }}
           env:
+            {{- if .Values.argus.extraEnvironmentVars }}
             {{ toYaml .Values.argus.extraEnvironmentVars | nindent 12 }}
+            {{- end }}
+            {{- if .Values.argus.extraSecretEnvironmentVars }}
+            {{ toYaml .Values.argus.extraSecretEnvironmentVars | nindent 12 }}
+            {{- end }}
           {{- end }}
           ports:
             - containerPort: {{ .Values.argus.containerPort }}
