@@ -1,0 +1,22 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "commitMessageAction": "update",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageExtra": "from {{currentVersion}} to {{newVersion}}",
+  "extends": ["config:best-practices", ":semanticCommits"],
+  "enabledManagers": ["helmv3", "helm-values"],
+  "packageRules": [
+    {
+      "commitMessageTopic": "helm chart {{depName}}",
+      "groupName": "helm charts & dependencies",
+      "matchManagers": ["helmv3"]
+    },
+    {
+      "commitMessageTopic": "helm values {{depName}}",
+      "groupName": "helm values - docker images",
+      "matchManagers": ["helm-values"]
+    }
+  ],
+  "rangeStrategy": "auto",
+  "separateMajorMinor": true
+}
