@@ -1,0 +1,36 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "commitMessageAction": "update",
+  "commitMessageTopic": "{{depName}}",
+  "commitMessageExtra": "from {{currentVersion}} to {{newVersion}}",
+  "extends": ["config:best-practices", ":semanticCommits"],
+  "enabledManagers": ["github-actions", "helmv3", "helm-values"],
+  "packageRules": [
+    {
+      "description": "GitHub Actions updates",
+      "labels": ["dependencies", "github_actions"],
+      "matchFileNames": [".github/workflows/**"],
+      "matchManagers": ["github-actions"]
+    },
+    {
+      "commitMessageTopic": "helm chart {{depName}}",
+      "groupName": "helm charts & dependencies",
+      "matchManagers": ["helmv3"]
+    },
+    {
+      "commitMessageTopic": "helm values {{depName}}",
+      "groupName": "helm values - docker images",
+      "matchManagers": ["helm-values"]
+    },
+    {
+      "datasourceTemplate": "docker",
+      "description": "Update Argus Docker image",
+      "matchManagers": ["helm-values"],
+      "matchDepNames": ["argus"],
+      "pinDigests": false,
+      "registryUrls": ["https://ghcr.io"]
+    }
+  ],
+  "rangeStrategy": "auto",
+  "separateMajorMinor": true
+}

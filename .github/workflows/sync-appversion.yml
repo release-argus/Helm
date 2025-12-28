@@ -1,0 +1,25 @@
+name: Sync appVersion
+on:
+  pull_request:
+    paths:
+      - "values.yaml"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install yq
+        run: sudo apt-get install -y yq
+
+      - name: Sync appVersion
+        run: .github/sync-appversion.sh
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Chart.yaml
+          git commit -m "chore: sync appVersion from values.yaml" || echo "No changes"
+          git push
