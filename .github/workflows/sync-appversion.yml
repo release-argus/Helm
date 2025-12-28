@@ -1,0 +1,25 @@
+name: Sync appVersion
+on:
+  pull_request:
+    paths:
+      - "values.yaml"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Sync appVersion
+        run: .github/sync-appversion.sh
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Chart.yaml
+          git commit -m "chore: sync appVersion from values.yaml" || echo "No changes"
+          git push
