@@ -11,6 +11,6 @@ maintainers:
   - name: Lars Lehmann
     url: https://larsl.net
 icon: https://github.com/release-argus/Argus/raw/master/web/ui/static/logo-dark.png
-appVersion: "0.29.0"
+appVersion: "0.29.1"
 annotations:
   example: A list of annotations keyed by name (optional).
