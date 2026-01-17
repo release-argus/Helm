@@ -7,7 +7,7 @@ argus:
   # Image for deployment
   image:
     repository: "releaseargus/argus"
-    tag: "0.29.0"
+    tag: "0.29.1"
     registry: 'docker.io'
     pullPolicy: IfNotPresent
 
